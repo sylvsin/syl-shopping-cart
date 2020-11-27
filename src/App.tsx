@@ -1,14 +1,26 @@
-
+// feature 1
 import React from 'react';
+import DressList from './components/DressList';
+import DressContextPovider from '../src/contexts/DressContext';
 
-function App() {
+const App: React.FC = () => {
   return (
     <div className="grid-container">
       <header>
         <a href="/">Syl Shopping Cart</a>
       </header>
       <main>
-        Product List
+        <div className="content">
+          <div className="main">
+          <DressContextPovider>
+          <DressList />
+          </DressContextPovider>
+          </div>
+
+          <div className="sidebar">
+            Cart Items
+          </div>
+        </div>
       </main>
       <footer>
         All right is reserved
