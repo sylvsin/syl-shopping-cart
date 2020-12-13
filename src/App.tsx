@@ -2,6 +2,7 @@
 import React from 'react';
 import DressList from './components/DressList';
 import DressContextPovider from '../src/contexts/DressContext';
+import Filter from './components/Filter';
 
 const App: React.FC = () => {
   return (
@@ -12,9 +13,10 @@ const App: React.FC = () => {
       <main>
         <div className="content">
           <div className="main">
-          <DressContextPovider>
-          <DressList />
-          </DressContextPovider>
+            <DressContextPovider>
+              <Filter />
+              <DressList />
+            </DressContextPovider>
           </div>
 
           <div className="sidebar">
