@@ -1,12 +1,10 @@
-/* */
 import React, { useContext } from 'react';
 import DressItem from './DressItem';
 import { DressContext } from '../contexts/DressContext';
 
 
-
 const DressList: React.FC = () => {
-    const { dresses } = useContext(DressContext)
+    const { dresses } = useContext(DressContext);
 
     return (
         <div>
