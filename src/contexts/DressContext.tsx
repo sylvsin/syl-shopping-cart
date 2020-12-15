@@ -8,28 +8,57 @@ export class Dress {
   description!: string;
   availableSizes!: string[];
   price!: number;
+  count!: number;
 }
 
 export interface IDressContext {
   dresses: Dress[];
   size: string;
   sort: string;
+  cartItems: Dress[];
+  setCartItems: (cartItems: any) => void;
+  addToCart: (dress: Dress) => void;
   sortDresses: (sort: any) => void;
   filterDresses: (size: any) => void;
+  removeFromCart: (id: number) => void;
 }
 
 export const DressContext = createContext<IDressContext>({
   dresses: [],
   size: "",
   sort: "",
+  cartItems: [],
+  setCartItems: (cartItems: Dress[]) => {},
+  addToCart: (dress: Dress) => {},
   sortDresses: (sort: any) => {},
   filterDresses: (size: any) => {},
+  removeFromCart: (id: number) => {},
 });
 
 const DressContextPovider: React.FC = ({ children }) => {
   const [dresses, setDress] = useState<Dress[]>(products);
   const [size, setSize] = useState<string>("");
   const [sort, setSort] = useState<string>("");
+  const [cartItems, setCartItems] = useState<Dress[]>([]);
+
+  const removeFromCart = (id: number) => {
+    setCartItems(cartItems.filter(item => item.id !== id));
+  }
+
+  const addToCart = (product: Dress) => {
+    let alreadyInCart = false;
+    cartItems.forEach(item => {
+      if(item.id === product.id) {
+        item.count++;
+        alreadyInCart = true;
+      }
+    });
+    if(!alreadyInCart) {
+      cartItems.push({...product, count: 1})
+    }
+    setCartItems(cartItems);
+    console.log(cartItems);
+  }
 
   const sortDresses = ({target: { value }, 
   }: ChangeEvent<HTMLSelectElement>) => {
@@ -75,7 +104,7 @@ const DressContextPovider: React.FC = ({ children }) => {
   return (
     <div>
       <DressContext.Provider
-        value={{ dresses, size, sort, sortDresses, filterDresses }}
+        value={{ dresses, size, sort, cartItems, addToCart, removeFromCart, setCartItems, sortDresses, filterDresses }}
       >
         {children}
       </DressContext.Provider>
