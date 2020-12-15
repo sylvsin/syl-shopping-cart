@@ -3,6 +3,7 @@ import React from 'react';
 import DressList from './components/DressList';
 import DressContextPovider from '../src/contexts/DressContext';
 import Filter from './components/Filter';
+import Cart from './components/Cart';
 
 const App: React.FC = () => {
   return (
@@ -10,20 +11,20 @@ const App: React.FC = () => {
       <header>
         <a href="/">Syl Shopping Cart</a>
       </header>
+      <DressContextPovider>
       <main>
         <div className="content">
           <div className="main">
-            <DressContextPovider>
               <Filter />
               <DressList />
-            </DressContextPovider>
           </div>
 
           <div className="sidebar">
-            Cart Items
+            <Cart />
           </div>
         </div>
       </main>
+      </DressContextPovider>
       <footer>
         All right is reserved
       </footer>
