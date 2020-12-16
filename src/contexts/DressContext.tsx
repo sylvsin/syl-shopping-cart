@@ -1,4 +1,4 @@
-import React, { ChangeEvent, createContext, useState } from "react";
+import React, { ChangeEvent, createContext, useEffect, useState } from "react";
 import { products } from "../data";
 
 export class Dress {
@@ -15,7 +15,11 @@ export interface IDressContext {
   dresses: Dress[];
   size: string;
   sort: string;
+  email: string;
+  name: string;
+  address: string;
   cartItems: Dress[];
+  createOrderItems: (item: any) => void;
   setCartItems: (cartItems: any) => void;
   addToCart: (dress: Dress) => void;
   sortDresses: (sort: any) => void;
@@ -27,7 +31,11 @@ export const DressContext = createContext<IDressContext>({
   dresses: [],
   size: "",
   sort: "",
+  email: "",
+  name: "",
+  address: "",
   cartItems: [],
+  createOrderItems: (item: any) => {},
   setCartItems: (cartItems: Dress[]) => {},
   addToCart: (dress: Dress) => {},
   sortDresses: (sort: any) => {},
@@ -35,14 +43,41 @@ export const DressContext = createContext<IDressContext>({
   removeFromCart: (id: number) => {},
 });
 
+const myDresses = () => {
+  const localData = localStorage.getItem('cartItems');
+  return localData ? JSON.parse(localData) : [];
+}
+
 const DressContextPovider: React.FC = ({ children }) => {
   const [dresses, setDress] = useState<Dress[]>(products);
   const [size, setSize] = useState<string>("");
   const [sort, setSort] = useState<string>("");
-  const [cartItems, setCartItems] = useState<Dress[]>([]);
+  const [cartItems, setCartItems] = useState<Dress[]>(myDresses);
+  const [email, setEmail] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+
+
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems))
+  }, [cartItems]);
 
   const removeFromCart = (id: number) => {
     setCartItems(cartItems.filter(item => item.id !== id));
+  }
+
+  let createOrderItems = (item: any) => {
+    const order = {
+        name: name,
+        email: email,
+        address: address,
+        cartItems: cartItems,
+    };
+    createOrderItems(order);   
+  }
+
+  createOrderItems = (name: string) => {
+    alert("Need to save order for " + name);
   }
 
   const addToCart = (product: Dress) => {
@@ -57,7 +92,6 @@ const DressContextPovider: React.FC = ({ children }) => {
       cartItems.push({...product, count: 1})
     }
     setCartItems(cartItems);
-    console.log(cartItems);
   }
 
   const sortDresses = ({target: { value }, 
@@ -104,7 +138,7 @@ const DressContextPovider: React.FC = ({ children }) => {
   return (
     <div>
       <DressContext.Provider
-        value={{ dresses, size, sort, cartItems, addToCart, removeFromCart, setCartItems, sortDresses, filterDresses }}
+        value={{ dresses, size, sort, email, name, address, cartItems, removeFromCart, createOrderItems, addToCart, setCartItems, sortDresses, filterDresses }}
       >
         {children}
       </DressContext.Provider>
