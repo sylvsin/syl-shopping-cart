@@ -1,6 +1,13 @@
 import React, { ChangeEvent, useContext, useState } from 'react';
 import { DressContext } from '../contexts/DressContext';
 import formatCurrency from '../util';
+import { Fade } from "react-awesome-reveal";
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from '@fortawesome/free-solid-svg-icons';
+library.add(fas);
+
 
 const Cart: React.FC = () => {
     const {cartItems, createOrderItems, removeFromCart} = useContext(DressContext);
@@ -11,7 +18,7 @@ const Cart: React.FC = () => {
 
     const createOrder = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        createOrderItems(e);  
+        createOrderItems(name);  
     }
 
     return (
@@ -20,39 +27,42 @@ const Cart: React.FC = () => {
                 {
                     cartItems.length === 0? <div className="cart cart-header">Cart is empty</div>
                     :
-                    <div className="cart cart-header">You have{" "}
-                     {cartItems.reduce((a, c) => a + c.count, 0)}{" "} 
-                     items in Cart
+                    <div className="cart cart-header">
+                        <FontAwesomeIcon className="fas fa-cart-plus" icon='cart-plus'/> You have{" "}
+                        {cartItems.reduce((a, c) => a + c.count, 0)}{" "} 
+                        items in Cart
                     </div>
                 }
             </div>
             
             <div className="cart">
-                <ul className="cart-items">
-                    {
-                        cartItems.map((item, Index) => {
-                            return(
-                                <li key={Index}>
-                                   <div className="img-title"> 
-                                        <img src={item.image} alt={item.title}/>
+                <Fade direction="left">
+                    <ul className="cart-items">
+                        {
+                            cartItems.map((item, Index) => {
+                                return(
+                                    <li key={Index}>
+                                    <div className="img-title"> 
+                                            <img src={item.image} alt={item.title}/>
 
-                                        {item.title}<br/>
+                                            {item.title}<br/>
 
-                                        {item.count} x {formatCurrency(item.price)}
-                                    </div>
-                                    <button
-                                        onClick={() => removeFromCart(item.id)}
-                                        className="remove-button"
-                                    >
-                                        Remove
-                                    </button>
-                                    <hr/>
-                                </li>
-                            )
-                        })
-                        
-                    }
-                </ul>
+                                            {item.count} x {formatCurrency(item.price)}
+                                        </div>
+                                        <button
+                                            onClick={() => removeFromCart(item.id)}
+                                            className="remove-button"
+                                        >
+                                            Remove
+                                        </button>
+                                        <hr/>
+                                    </li>
+                                )
+                            })
+                            
+                        }
+                    </ul>
+                </Fade>
             </div>
             
             {cartItems.length !== 0 && (
@@ -71,45 +81,47 @@ const Cart: React.FC = () => {
 
                     {
                         showCheckout && (
-                            <div className="cart">
-                                <form onSubmit={createOrder}>
-                                    <ul className="form-container">
-                                        <li>
-                                            <label>Email</label>
-                                            <input
-                                                name="email" 
-                                                type="email" 
-                                                required
-                                                value={email} onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                                            ></input>
-                                        </li>
-                                        <li>
-                                            <label>Name</label>
-                                            <input 
-                                                name="name"
-                                                type="text" 
-                                                required
-                                                value={name} onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-                                            ></input>
-                                        </li>
-                                        <li>
-                                            <label>Address</label>
-                                            <input 
-                                                name="address"
-                                                type="text" 
-                                                required
-                                                value={address} onChange={(e: ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
-                                            ></input>
-                                        </li>
-                                        <li>
-                                            <button className="button primary" type="submit">
-                                                Checkout
-                                            </button>
-                                        </li>
-                                    </ul>
+                            <Fade direction="right">
+                                <div className="cart">
+                                    <form onSubmit={createOrder}>
+                                        <ul className="form-container">
+                                            <li>
+                                                <label>Email</label>
+                                                <input
+                                                    name="email" 
+                                                    type="email" 
+                                                    required
+                                                    value={email} onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                                                ></input>
+                                            </li>
+                                            <li>
+                                                <label>Name</label>
+                                                <input 
+                                                    name="name"
+                                                    type="text" 
+                                                    required
+                                                    value={name} onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                                                ></input>
+                                            </li>
+                                            <li>
+                                                <label>Address</label>
+                                                <input 
+                                                    name="address"
+                                                    type="text" 
+                                                    required
+                                                    value={address} onChange={(e: ChangeEvent<HTMLInputElement>) => setAddress(e.target.value)}
+                                                ></input>
+                                            </li>
+                                            <li>
+                                                <button className="button primary" type="submit">
+                                                    Checkout
+                                                </button>
+                                            </li>
+                                        </ul>
 
-                                </form>
-                            </div>
+                                    </form>
+                                </div>
+                            </Fade>
                     )}
                 </div>
             )}
