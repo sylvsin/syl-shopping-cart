@@ -19,8 +19,9 @@ export interface IDressContext {
   name: string;
   address: string;
   cartItems: Dress[];
-  createOrderItems: (item: any) => void;
+  createOrderItems: (item: string) => void;
   setCartItems: (cartItems: any) => void;
+  setProduct: (product: Dress) => void;
   addToCart: (dress: Dress) => void;
   sortDresses: (sort: any) => void;
   filterDresses: (size: any) => void;
@@ -35,8 +36,9 @@ export const DressContext = createContext<IDressContext>({
   name: "",
   address: "",
   cartItems: [],
-  createOrderItems: (item: any) => {},
+  createOrderItems: (item: string) => {},
   setCartItems: (cartItems: Dress[]) => {},
+  setProduct: (product: Dress) => {},
   addToCart: (dress: Dress) => {},
   sortDresses: (sort: any) => {},
   filterDresses: (size: any) => {},
@@ -49,14 +51,14 @@ const myDresses = () => {
 }
 
 const DressContextPovider: React.FC = ({ children }) => {
-  const [dresses, setDress] = useState<Dress[]>(products);
+  const [dresses, setDresses] = useState<Dress[]>(products);
   const [size, setSize] = useState<string>("");
   const [sort, setSort] = useState<string>("");
   const [cartItems, setCartItems] = useState<Dress[]>(myDresses);
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [address, setAddress] = useState<string>("");
-
+  const [ product, setProduct ] = useState<Dress>()
 
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems))
@@ -101,7 +103,7 @@ const DressContextPovider: React.FC = ({ children }) => {
       setSort(value);
     } else {
       setSort(value);
-      setDress(
+      setDresses(
         products.slice().sort((a, b) => (
           value === "lowest"
           ? a.price > b.price
@@ -127,7 +129,7 @@ const DressContextPovider: React.FC = ({ children }) => {
       setSize(value);
     } else {
       setSize(value);
-      setDress(
+      setDresses(
         products.filter((dress) =>
           value === "ALL" ? true : dress.availableSizes.indexOf(value) >= 0
         )
@@ -138,7 +140,7 @@ const DressContextPovider: React.FC = ({ children }) => {
   return (
     <div>
       <DressContext.Provider
-        value={{ dresses, size, sort, email, name, address, cartItems, removeFromCart, createOrderItems, addToCart, setCartItems, sortDresses, filterDresses }}
+        value={{ dresses, size, sort, email, name, address, setProduct, cartItems, removeFromCart, createOrderItems, addToCart, setCartItems, sortDresses, filterDresses }}
       >
         {children}
       </DressContext.Provider>
