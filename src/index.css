@@ -78,7 +78,7 @@ footer {
 .products {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   padding: 0;
   margin: 0;
@@ -168,6 +168,7 @@ footer {
 .remove-button {
   font-size: 10px;
   cursor: pointer;
+  background-color: #ffd700;
 }
 
 .cart-items img {
@@ -255,3 +256,13 @@ input {
   z-index: 1000;
 }
 
+.modalBackground {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.modalShowing-true {
+  opacity: 1;
+  pointer-events: visible;
+}
