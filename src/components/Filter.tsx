@@ -2,12 +2,12 @@ import React, { useContext } from 'react'
 import { DressContext } from '../contexts/DressContext';
 
 const Filter: React.FC = () => {
-    const { dresses, size, sort, sortDresses, filterDresses } = useContext(DressContext);
+    const { products, size, sort, sortDresses, filterDresses } = useContext(DressContext);
 
     return (
         <div className="filter">
             <div className="filter-result">
-                {dresses.length}
+                {products.length}
                 Dresses
             </div>
 

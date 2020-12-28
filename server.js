@@ -2,9 +2,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const shortid = require("shortid");
+const cors = require('cors')
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors())
 
 // app.use("/", express.static(__dirname + "/build"));
 // app.get("/", (req, res) => res.sendFile(__dirname + "/build/index.html"));
@@ -26,6 +28,7 @@ const Product = mongoose.model(
     description: String,
     image: String,
     price: Number,
+    count: Number,
     availableSizes: [String],
   })
 );
