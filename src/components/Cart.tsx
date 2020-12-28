@@ -50,7 +50,7 @@ const Cart: React.FC = () => {
                                             {item.count} x {formatCurrency(item.price)}
                                         </div>
                                         <button
-                                            onClick={() => removeFromCart(item.id)}
+                                            onClick={() => removeFromCart(item._id)}
                                             className="remove-button"
                                         >
                                             Remove
