@@ -4,6 +4,9 @@ import DressList from './components/DressList';
 import DressContextPovider from '../src/contexts/DressContext';
 import Filter from './components/Filter';
 import Cart from './components/Cart';
+import { AppContextProvider } from './contexts/AppContext';
+
+const baseURL: string = "http://localhost:5000/api/";
 
 const App: React.FC = () => {
   return (
@@ -11,6 +14,7 @@ const App: React.FC = () => {
       <header>
         <a href="/">Syl Shopping Cart</a>
       </header>
+      <AppContextProvider baseUrl={baseURL}>
       <DressContextPovider>
       <main>
         <div className="content">
@@ -25,6 +29,7 @@ const App: React.FC = () => {
         </div>
       </main>
       </DressContextPovider>
+      </AppContextProvider>
       <footer>
         All right is reserved
       </footer>

@@ -5,16 +5,16 @@ import { Fade } from "react-awesome-reveal";
 
 
 const DressList: React.FC = () => {
-    const { dresses } = useContext(DressContext);
+    const { products } = useContext(DressContext);
 
     return ( 
         <div>
             <Fade direction="down">
                 <ul className="products">
                     {
-                        dresses.map((dress) => {
+                        products.map((dress) => {
                             return(
-                                <DressItem dress={dress} key={dress.id} />
+                                <DressItem dress={dress} key={dress._id} />
                             )
                         })
                     }

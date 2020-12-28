@@ -12,36 +12,14 @@ const customStyles = {
       bottom                : "auto",
       width                 : "60%",
       height                : "50%",
-    //   marginRight           : '-50%',
       transform             : 'translate(-50%, -50%)'
     }
   };
 
 const DressItem: React.FC<{dress: Dress}> = ({dress}) => {
-    const {cartItems, setCartItems} = useContext(DressContext);
+    const {addToCart} = useContext(DressContext);
     const [ product, setProduct ] = useState(null);
     const [modalState, setModalState] = useState(false);
-
-    const myDress = {
-         id: dress.id, image: dress.image,
-         price: dress.price, count: dress.count,
-         title: dress.title, avaibleSize: dress.availableSizes,
-         description: dress.description, 
-    };
-
-    const addToCart = (product: Dress) => {
-        let alreadyInCart = false;
-        cartItems.forEach(item => {
-            if(item.id === product.id) {
-                item.count++;
-                alreadyInCart = true;
-                setCartItems([...cartItems]);
-            }
-        });
-        if(!alreadyInCart) {
-            setCartItems([...cartItems, myDress]);
-        }
-    }
 
     const isOpen = (product: any) => {
         setProduct(product);
@@ -55,8 +33,9 @@ const DressItem: React.FC<{dress: Dress}> = ({dress}) => {
 
     return (
         <div className="product">
-            <a href={'#' + dress.id} onClick={(product: any) => {isOpen(product);
-            setModalState(true)}}>
+            <a href={'#'} onClick={(product: any) => {isOpen(product);
+                setModalState(true)}}
+            >
                 <img src={dress.image} alt={dress.title} />
                 <p>
                     { dress.title }
@@ -75,7 +54,6 @@ const DressItem: React.FC<{dress: Dress}> = ({dress}) => {
                 product && (
                 <Modal
                   isOpen={modalState}
-                  //   onAfterOpen={afterOpenModal}
                   onRequestClose={closeModal}
                   style={customStyles}
                   contentLabel="Example Modal"

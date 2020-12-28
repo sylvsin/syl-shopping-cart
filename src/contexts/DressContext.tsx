@@ -1,8 +1,10 @@
-import React, { ChangeEvent, createContext, useEffect, useState } from "react";
-import { products } from "../data";
+import React, { ChangeEvent, createContext, useCallback, useContext, useEffect, useState } from "react";
+import { AppContext } from "./AppContext";
+// import { products } from "../data";
+// import { count } from "console";
 
 export class Dress {
-  id!: number;
+  _id!: number;
   image!: string;
   title!: string;
   description!: string;
@@ -12,7 +14,7 @@ export class Dress {
 }
 
 export interface IDressContext {
-  dresses: Dress[];
+  products: Dress[];
   size: string;
   sort: string;
   email: string;
@@ -29,7 +31,7 @@ export interface IDressContext {
 }
 
 export const DressContext = createContext<IDressContext>({
-  dresses: [],
+  products: [],
   size: "",
   sort: "",
   email: "",
@@ -51,7 +53,7 @@ const myDresses = () => {
 }
 
 const DressContextPovider: React.FC = ({ children }) => {
-  const [dresses, setDresses] = useState<Dress[]>(products);
+  const [products, setProducts] = useState<Dress[]>([]);
   const [size, setSize] = useState<string>("");
   const [sort, setSort] = useState<string>("");
   const [cartItems, setCartItems] = useState<Dress[]>(myDresses);
@@ -59,14 +61,29 @@ const DressContextPovider: React.FC = ({ children }) => {
   const [name, setName] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [ product, setProduct ] = useState<Dress>()
+  const { api } = useContext(AppContext);
 
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems))
   }, [cartItems]);
 
   const removeFromCart = (id: number) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
+    setCartItems(cartItems.filter(item => item._id !== id));
   }
+
+  const fetchProduct = useCallback(() => {
+    if (api) {
+      api
+        .get("products")
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          setProducts(data);
+          console.log(data);
+        });
+    }
+  }, [api] );
 
   let createOrderItems = (item: any) => {
     const order = {
@@ -83,17 +100,16 @@ const DressContextPovider: React.FC = ({ children }) => {
   }
 
   const addToCart = (product: Dress) => {
-    let alreadyInCart = false;
-    cartItems.forEach(item => {
-      if(item.id === product.id) {
-        item.count++;
-        alreadyInCart = true;
-      }
-    });
-    if(!alreadyInCart) {
-      cartItems.push({...product, count: 1})
+
+    const doesExist = cartItems.find(item => item._id === product._id);
+
+    if(!doesExist) {
+      setCartItems([...cartItems, ...[{...product, count:1}]]);
+    } else {
+      const pos = cartItems.findIndex(item => item._id === product._id)
+      if(pos!==-1)
+      setCartItems([...cartItems.slice(0, pos), ...[{...cartItems[pos], count:cartItems[pos].count+1}], ...cartItems.slice(pos+1)]);
     }
-    setCartItems(cartItems);
   }
 
   const sortDresses = ({target: { value }, 
@@ -103,7 +119,7 @@ const DressContextPovider: React.FC = ({ children }) => {
       setSort(value);
     } else {
       setSort(value);
-      setDresses(
+      setProducts(
         products.slice().sort((a, b) => (
           value === "lowest"
           ? a.price > b.price
@@ -113,7 +129,7 @@ const DressContextPovider: React.FC = ({ children }) => {
           ? a.price < b.price
             ? 1
             : -1
-          : a.id < b.id
+          : a._id < b._id
             ? 1
             : -1
         ))
@@ -129,18 +145,36 @@ const DressContextPovider: React.FC = ({ children }) => {
       setSize(value);
     } else {
       setSize(value);
-      setDresses(
-        products.filter((dress) =>
-          value === "ALL" ? true : dress.availableSizes.indexOf(value) >= 0
-        )
-      );
+      if(api){
+        api
+        .get("products")
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          setProducts(data);
+          console.log(data);
+        });
+        api.get('products').then(result=>result.data).then((products:Dress[])=>{
+          setProducts(
+            products.filter((dress) =>
+              value === "ALL" ? true : dress.availableSizes.indexOf(value) >= 0
+            )
+          );
+
+        })
+      }
     }
   };
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
 
   return (
     <div>
       <DressContext.Provider
-        value={{ dresses, size, sort, email, name, address, setProduct, cartItems, removeFromCart, createOrderItems, addToCart, setCartItems, sortDresses, filterDresses }}
+        value={{ products, size, sort, email, name, address, setProduct, cartItems, removeFromCart, createOrderItems, addToCart, setCartItems, sortDresses, filterDresses }}
       >
         {children}
       </DressContext.Provider>
