@@ -12,9 +12,9 @@ const DressList: React.FC = () => {
             <Fade direction="down">
                 <ul className="products">
                     {
-                        products.map((dress) => {
+                        products.map((dress, i) => {
                             return(
-                                <DressItem dress={dress} key={dress._id} />
+                                <DressItem dress={dress} key={`${dress._id}-${dress.title}-${i}`} />
                             )
                         })
                     }

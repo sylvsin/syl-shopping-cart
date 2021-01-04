@@ -13,15 +13,23 @@ export class Dress {
   count!: number;
 }
 
+interface Order{
+  name:string
+  email:string
+  address:string
+  cartItems:Dress[]
+  total:number
+  _id:string
+  createdAt:string
+  updatedAt:string
+}
 export interface IDressContext {
   products: Dress[];
   size: string;
   sort: string;
-  email: string;
-  name: string;
-  address: string;
   cartItems: Dress[];
-  createOrderItems: (item: string) => void;
+  order?: Order
+  createOrderItems: (item: any) => void;
   setCartItems: (cartItems: any) => void;
   setProduct: (product: Dress) => void;
   addToCart: (dress: Dress) => void;
@@ -34,11 +42,8 @@ export const DressContext = createContext<IDressContext>({
   products: [],
   size: "",
   sort: "",
-  email: "",
-  name: "",
-  address: "",
   cartItems: [],
-  createOrderItems: (item: string) => {},
+  createOrderItems: (item: any) => {},
   setCartItems: (cartItems: Dress[]) => {},
   setProduct: (product: Dress) => {},
   addToCart: (dress: Dress) => {},
@@ -57,11 +62,9 @@ const DressContextPovider: React.FC = ({ children }) => {
   const [size, setSize] = useState<string>("");
   const [sort, setSort] = useState<string>("");
   const [cartItems, setCartItems] = useState<Dress[]>(myDresses);
-  const [email, setEmail] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [address, setAddress] = useState<string>("");
   const [ product, setProduct ] = useState<Dress>()
   const { api } = useContext(AppContext);
+  const [order, setOrder] = useState<Order>()
 
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems))
@@ -87,17 +90,34 @@ const DressContextPovider: React.FC = ({ children }) => {
 
   let createOrderItems = (item: any) => {
     const order = {
-        name: name,
-        email: email,
-        address: address,
+        _id: item._id,
+        name: item.name,
+        email: item.email,
+        address: item.address,
         cartItems: cartItems,
+        total: cartItems.reduce((a,b) => a + b.price*b.count, 0),
     };
-    createOrderItems(order);   
+    createOrderItems2(order);   
   }
 
-  createOrderItems = (name: string) => {
-    alert("Need to save order for " + name);
-  }
+  const createOrderItems2 = (order:any) => {
+    // alert("Need to save order for " + name);
+    console.log("Sending data", order)
+    if(api) {
+      api
+      .post("orders", order,{
+        headers: {
+            "Content-Type": "application/json"
+        },
+      })
+    
+      .then(res=>res)
+      .then(data=>{
+        console.log(data.data)
+        setOrder(data.data)
+        localStorage.clear();
+      })}
+  };
 
   const addToCart = (product: Dress) => {
 
@@ -174,7 +194,7 @@ const DressContextPovider: React.FC = ({ children }) => {
   return (
     <div>
       <DressContext.Provider
-        value={{ products, size, sort, email, name, address, setProduct, cartItems, removeFromCart, createOrderItems, addToCart, setCartItems, sortDresses, filterDresses }}
+        value={{ order,products, size, sort, setProduct, cartItems, removeFromCart, createOrderItems, addToCart, setCartItems, sortDresses, filterDresses }}
       >
         {children}
       </DressContext.Provider>

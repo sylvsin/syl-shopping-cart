@@ -1,11 +1,15 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const shortid = require("shortid");
 const cors = require('cors')
+const bodyParser = require('body-parser');
 
 const app = express();
-app.use(bodyParser.json());
+// app.use(express.json())
+
+app.use(bodyParser.json()); //Make sure u have added this line
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(cors())
 
 // app.use("/", express.static(__dirname + "/build"));
@@ -49,54 +53,54 @@ app.delete("/api/products/:id", async (req, res) => {
   res.send(deletedProduct);
 });
 
-// const Order = mongoose.model(
-//   "order",
-//   new mongoose.Schema(
-//     {
-//       _id: {
-//         type: String,
-//         default: shortid.generate,
-//       },
-//       email: String,
-//       name: String,
-//       address: String,
-//       total: Number,
-//       cartItems: [
-//         {
-//           _id: String,
-//           title: String,
-//           price: Number,
-//           count: Number,
-//         },
-//       ],
-//     },
-//     {
-//       timestamps: true,
-//     }
-//   )
-// );
+const Order = mongoose.model(
+  "order",
+  new mongoose.Schema(
+    {
+      _id: {
+        type: String,
+        default: shortid.generate,
+      },
+      email: String,
+      name: String,
+      address: String,
+      total: Number,
+      cartItems: [
+        {
+          _id: String,
+          title: String,
+          price: Number,
+          count: Number,
+        },
+      ],
+    },
+    {
+      timestamps: true,
+    }
+  )
+);
 
-// app.post("/api/orders", async (req, res) => {
-//   if (
-//     !req.body.name ||
-//     !req.body.email ||
-//     !req.body.address ||
-//     !req.body.total ||
-//     !req.body.cartItems
-//   ) {
-//     return res.send({ message: "Data is required." });
-//   }
-//   const order = await Order(req.body).save();
-//   res.send(order);
-// });
-// app.get("/api/orders", async (req, res) => {
-//   const orders = await Order.find({});
-//   res.send(orders);
-// });
-// app.delete("/api/orders/:id", async (req, res) => {
-//   const order = await Order.findByIdAndDelete(req.params.id);
-//   res.send(order);
-// });
+app.post("/api/orders", async (req, res) => {
+  if (
+    !req.body.name ||
+    !req.body.email ||
+    !req.body.address ||
+    !req.body.total ||
+    !req.body.cartItems
+  ) {
+    return res.send({ message: "Data is required." });
+  }
+  const order = await Order(req.body).save();
+  res.send(order);
+});
+app.get("/api/orders", async (req, res) => {
+  const orders = await Order.find({});
+  res.send(orders);
+});
+app.delete("/api/orders/:id", async (req, res) => {
+  const order = await Order.findByIdAndDelete(req.params.id);
+  res.send(order);
+});
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log("serve at http://localhost:5000"));

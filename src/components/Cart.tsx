@@ -2,47 +2,127 @@ import React, { ChangeEvent, useContext, useState } from 'react';
 import { DressContext } from '../contexts/DressContext';
 import formatCurrency from '../util';
 import { Fade } from "react-awesome-reveal";
+import Modal from 'react-modal'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from '@fortawesome/free-solid-svg-icons';
 library.add(fas);
 
+const customStyles = {
+    content : {
+      top                   : "21.5rem",
+      left                  : "52rem",
+      right                 : "54rem",
+      bottom                : "auto",
+      width                 : "60%",
+      height                : "50%",
+      transform             : 'translate(-50%, -50%)'
+    }
+};
+
 
 const Cart: React.FC = () => {
-    const {cartItems, createOrderItems, removeFromCart} = useContext(DressContext);
+    const {cartItems, order, createOrderItems, removeFromCart} = useContext(DressContext);
     const [showCheckout, setShowCheckout] = useState<Boolean>(false);
+    const [_id, set_id] = useState<string>();
     const [email, setEmail] = useState<string>("");
     const [name, setName] = useState<string>("");
     const [address, setAddress] = useState<string>("");
+    const [createdAt, setCreatedAt] = useState<string>("");
+    const [ product, setProduct ] = useState(null);
+    const [modalState, setModalState] = useState(false);
+
+    const isOpen = (product: any) => {
+        setProduct(product);
+    };
+    
+    const closeModal = ():void => {
+        setProduct(product);
+        setModalState(false)
+    }
 
     const createOrder = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        createOrderItems(name);  
+        createOrderItems({
+            _id: _id,
+            name: name,
+            email: email,
+            address: address,
+            createdAt: createdAt,
+            cartItems: cartItems,
+            total: cartItems.reduce((a, c) => a + (c.price*c.count), 0),
+        });  
     }
 
     return (
         <div>
             <div>
                 {
-                    cartItems.length === 0? <div className="cart cart-header">Cart is empty</div>
+                    cartItems.length === 0? <div className="cart cart-header">
+                        <FontAwesomeIcon className="fas fa-cart-plus" icon='cart-plus'/> Cart is empty </div>
                     :
                     <div className="cart cart-header">
                         <FontAwesomeIcon className="fas fa-cart-plus" icon='cart-plus'/> You have{" "}
-                        {cartItems.reduce((a, c) => a + c.count, 0)}{" "} 
-                        items in Cart
+                        <strong>{cartItems.reduce((a, c) => a + c.count, 0)}{" "} 
+                         items</strong> in Cart
                     </div>
                 }
-            </div>
+            </div> 
             
+            {
+                product && (
+                    <Modal 
+                        isOpen={modalState}
+                        onRequestClose={closeModal}
+                        style={customStyles}
+                        contentLabel="Example Modal"
+                    >
+                        <button className="close-modal" onClick={closeModal}>x</button>
+                        <div className="order-details">
+                            <h3 className="success-message">Your order has been placed.</h3>
+                            Order: <strong> {order?._id}</strong>
+                            <ul>
+                                <li>
+                                    <div>Name:</div>
+                                    <div>{order?.name}</div>
+                                </li>
+                                <li>
+                                    <div>Email:</div>
+                                    <div>{order?.email}</div>
+                                </li>
+                                <li>
+                                    <div>Address:</div>
+                                    <div>{order?.address}</div>
+                                </li>
+                                <li>
+                                    <div>Date:</div>
+                                    <div>{order?.createdAt}</div>
+                                </li>
+                                <li>
+                                    <div>Total:</div>
+                                    <div>{formatCurrency(order?.total??0)}</div>
+                                </li>
+                                <li>
+                                    <div>Cart Items:</div>
+                                    <div>{order?.cartItems.map((x, i) => {
+                                        return <div key={x._id}>{x.count} {" x "} {x.title}</div>
+                                    })}</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </Modal>
+                )
+            }
+
             <div className="cart">
                 <Fade direction="left">
                     <ul className="cart-items">
                         {
-                            cartItems.map((item, Index) => {
+                            cartItems.map((item, i) => {
                                 return(
-                                    <li key={Index}>
-                                    <div className="img-title"> 
+                                    <li key={`${item._id}-${item.title}-${i}`}>
+                                        <div className="img-title"> 
                                             <img src={item.image} alt={item.title}/>
 
                                             {item.title}<br/>
@@ -71,9 +151,11 @@ const Cart: React.FC = () => {
                         <div className="total">
                             <div>
                                 Total: {" "}
-                                {
-                                    formatCurrency(cartItems.reduce((a, c) => a + c.price * c.count, 0))
-                                }
+                                <strong>
+                                    {
+                                        formatCurrency(cartItems.reduce((a, c) => a + c.price * c.count, 0))
+                                    }
+                                </strong>
                             </div>
                             <div onClick={() => {setShowCheckout(true)}} className="button primary">Proceed</div>
                         </div>
@@ -113,7 +195,10 @@ const Cart: React.FC = () => {
                                                 ></input>
                                             </li>
                                             <li>
-                                                <button className="button primary" type="submit">
+                                                <button className="button primary" type="submit"
+                                                    onClick={(product: any) => {isOpen(product);
+                                                        setModalState(true)}}
+                                                >
                                                     Checkout
                                                 </button>
                                             </li>
