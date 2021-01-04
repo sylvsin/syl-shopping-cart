@@ -14,7 +14,7 @@ const customStyles = {
       height                : "50%",
       transform             : 'translate(-50%, -50%)'
     }
-  };
+};
 
 const DressItem: React.FC<{dress: Dress}> = ({dress}) => {
     const {addToCart} = useContext(DressContext);
@@ -33,7 +33,7 @@ const DressItem: React.FC<{dress: Dress}> = ({dress}) => {
 
     return (
         <div className="product">
-            <a href={'#'} onClick={(product: any) => {isOpen(product);
+            <a href={'#' } onClick={(product: any) => {isOpen(product);
                 setModalState(true)}}
             >
                 <img src={dress.image} alt={dress.title} />
@@ -71,8 +71,8 @@ const DressItem: React.FC<{dress: Dress}> = ({dress}) => {
                       <p>{dress.description}</p>
                       <p>
                         Avaiable Sizes:{" "}
-                        {dress.availableSizes.map((x) => (
-                          <span>
+                        {dress.availableSizes.map((x, i) => (
+                          <span key={i}>
                             {" "}
                             <button className="button">{x}</button>
                           </span>
